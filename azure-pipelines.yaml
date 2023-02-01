@@ -168,10 +168,10 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'UdacityDS - 73'  # TODO
+              azureSubscription: 'azuredevopsservice'  # TODO
               appName: 'myApplication'
               appType: 'webApp'
-              package: $(Pipeline.Workspace)/drop-fakerestapi       # Use the published zip artifact. 
+              package: $(Pipeline.Workspace)/Test-Jmeter-Fakerestapi       # Use the published zip artifact. 
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
           # ToDo: Update the script below to install jmeter, unzip the jmeter test suite published zip artifact, and run the PerformanceTestSuite.  
@@ -184,33 +184,31 @@ stages:
               
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
-  # ToDo: 
-  # - deployment: VMDeploy
-  #   displayName: Selenium Tests
-  #   environment:
-  #     name: 'test'
-  #     resourceType: VirtualMachine
-  #     tags: selenium
-  #   strategy:
-  #     runOnce:
-  #       deploy:
-  #         steps:
-  #         - download: current
-  #           artifact: drop-uitests
-  #         - task: Bash@3
-  #           inputs:
-  #             targetType: 'inline'
-  #             script: |           
-  #               #! /bin/bash
+  - deployment: VMDeploy
+    displayName: Selenium Tests
+    environment:
+      name: 'test'
+      resourceType: VirtualMachine
+      tags: selenium
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: Test-Selenium
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |           
+                #! /bin/bash
                 
-  #               sudo apt-get upgrade -y
-  #               sudo apt-get install python3-pip -y
-  #               sudo apt-get install unzip -y
-  #               sudo apt-get install -y chromium-browser
-  #               pip3 install selenium
-                
-  #               export PATH=$PATH:/path/to/chromedriver     
-                
-  #               # ToDo: Write commands for deploying the UI Test Suite (published zip artifact) to the linux VM and execute the Test Suite
-  #               # ToDo: Direct the output of the Selenium Test Suite to a log file
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+                sudo rm -rf chromedriver*
+                wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip
+                unzip chromedriver*.zip
+                sudo mv chromedriver -f /usr/bin
                 
