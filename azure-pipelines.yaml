@@ -95,6 +95,7 @@ stages:
     #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
   - job: Postman_Tests
+    dependsOn: Build_Infrastructure
     steps:   
     # Postman - Install Newman
     - task: Bash@3
@@ -134,6 +135,7 @@ stages:
         mergeTestResults: true
 
   - job: Archive_Test_Files
+    dependsOn: Postman_Tests
     steps:
     # Selenium (UI) Test Suite - Archive the package
     - task: ArchiveFiles@2
