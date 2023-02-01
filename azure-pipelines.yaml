@@ -17,6 +17,7 @@ stages:
   - job: BuildInfrastructure
     steps:
     - task: Bash@3
+      displayName: 'Bash Configuration'
       inputs:
         targetType: 'inline'
         script: |           
@@ -100,7 +101,7 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-          npm install -g newman
+          sudo npm install -g newman
     # Postman Data Validation Test Suite
     - task: Bash@3
       displayName: Run Data Validation Tests
