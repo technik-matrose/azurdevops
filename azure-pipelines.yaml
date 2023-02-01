@@ -93,8 +93,10 @@ stages:
     - task: Bash@3
       displayName: Install Newman
       inputs:
-        script: 'sudo npm install -g newman'
-        workingDirectory: $(System.DefaultWorkingDirectory)
+        targetType: 'inline'
+        script: |
+          #! /bin/bash
+          npm install -g newman
     # Postman Data Validation Test Suite
     - task: Bash@3
       displayName: Run Data Validation Tests
