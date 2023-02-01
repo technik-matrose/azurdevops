@@ -26,6 +26,7 @@ stages:
           sudo apt-get upgrade -y
           sudo apt update
           sudo apt-get install unzip
+          sudo apt-get install zip -y
           sudo apt install nodejs -y
           sudo apt install npm -y 
 
@@ -132,6 +133,7 @@ stages:
         testResultsFiles: '*.xml'
         searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman/results'
         testRunTitle: 'Tests-Postman'
+        mergeTestResults: true
 
     #--------------------------------------------#
     # Selenium (UI) Test Suite - Archive the package  
