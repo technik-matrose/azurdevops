@@ -58,7 +58,7 @@ stages:
     #   secureFile: 
 
     # Run Terraform Apply
-    - task: TerraformCLI@0@0
+    - task: TerraformCLI@0
       displayName: Terraform apply
       inputs:
         provider: 'azurerm'
