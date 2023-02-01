@@ -29,7 +29,7 @@ stages:
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
         backendServiceArm: '$(azureServiceConnectionId)'
-        backendAzureRmResourceGroupName: 'UdacityDS - 73'
+        backendAzureRmResourceGroupName: 'UdacityDS - 73' # TODO
         backendAzureRmStorageAccountName: 'tfstate3456'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
@@ -157,8 +157,6 @@ stages:
 #--------------------------------------------#    
 - stage: Deploy
   jobs:
-  #--------------------------------------------#  
-  # Deploy FakeRestAPI Web App
   - deployment: FakeRestAPI
     pool:
       vmImage: 'Ubuntu-18.04'      
@@ -170,7 +168,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'UdacityDS - 36'
+              azureSubscription: 'UdacityDS - 73'  # TODO
               appName: 'myApplication'
               appType: 'webApp'
               package: $(Pipeline.Workspace)/drop-fakerestapi       # Use the published zip artifact. 
