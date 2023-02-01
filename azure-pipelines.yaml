@@ -89,22 +89,21 @@ stages:
     #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
 #--------------------------------------------#    
-    # Postman - Install Newman    
-    # ToDo: Update the command and verify the working directory
-    - task: CmdLine@2
+    # Postman - Install Newman
+    - task: Bash@3
       displayName: Install Newman
       inputs:
         script: 'sudo npm install -g newman'
         workingDirectory: $(System.DefaultWorkingDirectory)
     # Postman Data Validation Test Suite
-    - task: CmdLine@2
+    - task: Bash@3
       displayName: Run Data Validation Tests
       continueOnError: true
       inputs:
         script: 'newman run Data-Validation.postman_collection.json -e Test.postman_collection.json --bail -r cli,junit --reporter-junit-export junit-data-validation.xml'
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman Regression Test Suite    
-    - task: CmdLine@2
+    - task: Bash@3
       displayName: Run Regression Tests
       continueOnError: true
       inputs:
