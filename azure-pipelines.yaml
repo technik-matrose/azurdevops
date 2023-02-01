@@ -101,6 +101,7 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
+          
           sudo npm install -g newman
     # Postman Data Validation Test Suite
     - task: Bash@3
