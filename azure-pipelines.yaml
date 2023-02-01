@@ -94,7 +94,8 @@ stages:
     #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
     #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
-#--------------------------------------------#    
+  - job: Postman Tests
+    steps:   
     # Postman - Install Newman
     - task: Bash@3
       displayName: Install Newman
@@ -102,7 +103,6 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-
           sudo npm install -g newman
     # Postman Data Validation Test Suite
     - task: Bash@3
@@ -112,7 +112,6 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-          
           newman run Data-Validation.postman_collection.json -e Test.postman_environment.json --bail -r cli,junit --reporter-junit-export results/junit-data-validation.xml
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman Regression Test Suite    
@@ -123,7 +122,6 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-
           newman run Regression.postman_collection.json -e Test.postman_environment.json --bail -r cli,junit --reporter-junit-export results/junit-regression.xml
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman - Publish Results
@@ -135,9 +133,9 @@ stages:
         testRunTitle: 'Tests-Postman'
         mergeTestResults: true
 
-    #--------------------------------------------#
-    # Selenium (UI) Test Suite - Archive the package  
-    # "ArchiveFiles@2" picks up the web package and archives it.
+  - job: Archive Test Files
+    steps:
+    # Selenium (UI) Test Suite - Archive the package
     - task: ArchiveFiles@2
       displayName: 'Archive UI Tests'
       inputs:
@@ -148,10 +146,8 @@ stages:
     # Selenium Test Suite - Publish the package
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above
-        artifactName: Test-Selenium
-
-    #--------------------------------------------#    
+        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip
+        artifactName: Test-Selenium 
     # FakeRestAPI - Archive
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
@@ -163,10 +159,8 @@ stages:
     # FakeRestAPI - Publish    
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'   # Same as the archiveFile artifact above
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
         artifactName: Test-Jmeter-Fakerestapi
-
-    #--------------------------------------------#  
     # JMeter (Performance) Test Suite - Archive
     - task: ArchiveFiles@2
       displayName: 'Archive PerformanceTestSuite'
@@ -178,12 +172,9 @@ stages:
     # JMeter Test Suite - Publish    
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-testsuite.zip'   # Same as the archiveFile artifact above
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-testsuite.zip'
         artifactName: Test-Jmeter-testsuite
-
-#--------------------------------------------#  
-# DEPLOYMENT STAGE
-#--------------------------------------------#    
+   
 - stage: Deploy
   jobs:
   - deployment: FakeRestAPI
@@ -200,16 +191,30 @@ stages:
               azureSubscription: 'azuredevopsservice' 
               appName: 'myApplication'
               appType: 'webApp'
-              package: $(Pipeline.Workspace)/Test-Jmeter-Fakerestapi       # Use the published zip artifact. 
+              package: $(Pipeline.Workspace)/Test-Jmeter-Fakerestapi/$(Build.BuildId)-fakerestapi.zip
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
-          # ToDo: Update the script below to install jmeter, unzip the jmeter test suite published zip artifact, and run the PerformanceTestSuite.  
-          # ToDo: Generate the log file. 
-          - task: CmdLine@2
+          - task: Bash@3
+            displayName: Install JMeter
             inputs:
+              targetType: 'inline'
               script: |
-                                                                            # ToDo: Write your commands
-              workingDirectory: $(Pipeline.Workspace)/Test-Jmeter-testsuite      
+                #! /bin/bash
+
+                sudo apt-get install openjdk-11-jre-headless -y
+                wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.1.tgz -O jmeter.tgz
+                tar -xzvf jmeter.tgz
+          - task: Bash@3
+            displayName: Run JMeter stress
+            inputs:
+              targetType: 'inline'
+              script: |
+                #! /bin/bash
+
+                apache-jmeter-5.4.1/bin/jmeter -n -t automatedtesting/jmeter/Starter.jmx \
+                  -l automatedtesting/jmeter/logs/test-output.csv \
+                  -e -f -o automatedtesting/jmeter/logs/test-log.html \
+                  -j automatedtesting/jmeter/logs/jmeter.log    
               
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
@@ -240,4 +245,12 @@ stages:
                 wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip
                 unzip chromedriver*.zip
                 sudo mv chromedriver -f /usr/bin
-                
+
+                python -m pip install --upgrade pip
+                pip install selenium
+                pip install pytest
+                pip install pytest-html
+                pip install chromedriver-py=96.0.4664.18
+                pip install pytest-xdist
+                pip install pytest-nunit
+                python3 automatedtesting/selenium/login.py
