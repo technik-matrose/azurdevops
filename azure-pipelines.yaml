@@ -111,8 +111,9 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-
-          newman run Data-Validation.postman_collection.json -e Data-Validation.postman_collection.json --bail -r cli,junit --reporter-junit-export results/junit-data-validation.xml
+          pwd
+          ls -l
+          newman run Data-Validation.postman_collection.json -e Test.postman_collection.json --bail -r cli,junit --reporter-junit-export results/junit-data-validation.xml
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman Regression Test Suite    
     - task: Bash@3
@@ -123,7 +124,7 @@ stages:
         script: |
           #! /bin/bash
 
-          newman run Regression.postman_collection.json -e Regression.postman_collection.json --bail -r cli,junit --reporter-junit-export results/junit-regression.xml
+          newman run Regression.postman_collection.json -e Test.postman_collection.json --bail -r cli,junit --reporter-junit-export results/junit-regression.xml
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman - Publish Results
     - task: PublishTestResults@2
