@@ -25,7 +25,8 @@ stages:
           sudo apt-get upgrade -y
           sudo apt update
           sudo apt-get install unzip
-          sudo apt install nodejs npm
+          sudo apt install nodejs -y
+          sudo apt install npm -y 
 
     # Run Terraform Install
     # - task: TerraformInstaller@0
