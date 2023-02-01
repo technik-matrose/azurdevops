@@ -19,7 +19,7 @@ stages:
     - task: TerraformInstaller@0
       displayName: 'Terrafom installation'
       inputs:
-        terraformVersion: '1.2.9'
+        terraformVersion: 0.14.3
     
     # Run Terraform Init on the pipeline agent
     - task: TerraformCLI@0
@@ -168,7 +168,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'azuredevopsservice'  # TODO
+              azureSubscription: 'azuredevopsservice' 
               appName: 'myApplication'
               appType: 'webApp'
               package: $(Pipeline.Workspace)/Test-Jmeter-Fakerestapi       # Use the published zip artifact. 
