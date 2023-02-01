@@ -177,7 +177,7 @@ stages:
         targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-testsuite.zip'
         artifactName: Test-Jmeter-testsuite
    
-- stage: Deploy
+- stage: Deploy1
   jobs:
   - deployment: FakeRestAPI
     pool:
@@ -218,8 +218,10 @@ stages:
                   -e -f -o automatedtesting/jmeter/logs/test-log.html \
                   -j automatedtesting/jmeter/logs/jmeter.log    
               
-  #--------------------------------------------#  
+
   # Selenium | Functional UI Tests
+- stage: Deploy2
+  jobs:
   - deployment: VMDeploy
     displayName: Selenium Tests
     environment:
