@@ -14,7 +14,7 @@ variables:
 stages: 
 - stage: Build
   jobs:
-  - job: BuildInfrastructure
+  - job: Build_Infrastructure
     steps:
     - task: Bash@3
       displayName: 'Bash Configuration'
@@ -94,7 +94,7 @@ stages:
     #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
     #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
-  - job: Postman Tests
+  - job: Postman_Tests
     steps:   
     # Postman - Install Newman
     - task: Bash@3
@@ -133,7 +133,7 @@ stages:
         testRunTitle: 'Tests-Postman'
         mergeTestResults: true
 
-  - job: Archive Test Files
+  - job: Archive_Test_Files
     steps:
     # Selenium (UI) Test Suite - Archive the package
     - task: ArchiveFiles@2
